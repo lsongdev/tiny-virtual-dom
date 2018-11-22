@@ -1,23 +1,26 @@
-import { h, updateElement } from './tiny-virtual-dom.js';
+import { h, render, diff, patch } from './tiny-virtual-dom.js';
 
-const a = (
-  h('ul', { className: 'list' },
-    h('li', { className: 'item' }, 'item 1'),
-    h('li', {}, 'item 2'),
-  )
+const tree = h('ul', null,
+  h('li', {key: 'a'}, 'a'),
+  h('li', {key: 'b'}, 'b'),
+  h('li', {key: 'c'}, 'c'),
+  h('li', {key: 'd'}, 'd'),
+  h('li', {key: 'e'}, 'e'),
 );
 
-const b = (
-  h('ul', { className: 'list' },
-    h('li', { className: 'item item2' }, 'item 1'),
-    h('li', { style: 'color: red' }, 'item 2'),
-  )
+const rootNode = render(tree);
+document.body.appendChild(rootNode);
+
+const newTree = h('ul', { a:1 },
+  h('li', {key: 'a'}, 'a'),
+  h('li', {key: 'b'}, 'b'),
+  h('li', {key: 'c'}, 'c'),
+  h('li', {key: 'd'}, 'd'),
+  h('li', {key: 'e'}, 'e'),
 );
 
-const $root = document.getElementById('root');
+const patches = diff(tree, newTree);
 
-updateElement($root, a);
+console.log('patches:', patches);
 
-setTimeout(() => {
-  updateElement($root, b, a);
-}, 3000);
+patch(rootNode, patches);
